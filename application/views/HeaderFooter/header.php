@@ -11,6 +11,6 @@
     <!-- As a link -->
 <nav class="navbar bg-light">
   <div class="container">
-    <a class="navbar-brand" href="#">Navbar</a>
+    <a class="navbar-brand" href="<?= base_url() ?>">RHKALMA</a>
   </div>
 </nav>

@@ -2,7 +2,7 @@
     <div class="container justify-content-center d-flex justify-content-center">
         <div class="row col-md-6 mt-3">
             <div class="row">
-                <h1 class="text-center">Edit Testimoni</h1>
+                <h1 class="text-center">Tambah Testimoni</h1>
             </div>
             <form class="row" action="" method="post">
             <div class="mb-3">
