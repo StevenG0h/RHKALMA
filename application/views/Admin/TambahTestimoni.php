@@ -4,7 +4,7 @@
             <div class="row">
                 <h1 class="text-center">Tambah Testimoni</h1>
             </div>
-            <form class="row" action="<?= base_url("Testimoni/addTestimoniService") ?>" method="post" enctype="multipart/form-data">
+            <form class="row" action="<?= base_url("Testimoni/addTestimoniProcess") ?>" method="post" enctype="multipart/form-data">
             <div class="mb-3">
                 <label for="exampleInputEmail1" class="form-label">Komentar Konsumen</label>
                     <textarea name="komentar" id="" cols="30" rows="10" class="form-control"></textarea>
