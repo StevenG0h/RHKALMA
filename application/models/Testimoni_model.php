@@ -13,7 +13,10 @@ class Testimoni_model extends CI_Model
         public function setMedia($media){
             $this->media = $media;            
         }
-        public function updateData(){
+        public function getMedia(){
+            return $this->media;
+        }
+        public function updateTestimoni(){
             $data= array(
                 'Testimoni_id' => $this->testimoni_id,
                 'Komentar' =>$this->komentar,
@@ -33,7 +36,7 @@ class Testimoni_model extends CI_Model
                 return false;
             }
         }
-        public function saveData(){
+        public function saveTestimoni(){
             $data= array(
                 'Komentar' =>$this->komentar,
                 'Media' => $this->media
@@ -45,5 +48,12 @@ class Testimoni_model extends CI_Model
             }
             
         }
-        
+        public function deleteTestimoni(){
+            $this->db->where('Testimoni_id',$this->testimoni_id);
+            if ($this->db->delete('Testimoni')) {
+                return true;
+            }else{
+                return false;
+            }
+        }
 }

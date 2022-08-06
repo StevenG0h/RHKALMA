@@ -1,28 +1,21 @@
 <div class="container-fluid">
     <div class="container justify-content-center d-flex justify-content-center">
-        <div class="row col-lg-4 col-8 col-sm-12 mt-3">
-            <div class="row">
-                <h1 class="text-center">Register</h1>
-            </div>
-            <form class="row" action="" method="post">
-                <div class="mb-3">
-                    <label for="exampleInputEmail1" class="form-label">Username</label>
-                    <input required name="" type="text" id="" cols="30" rows="10" class="form-control" placeholder="masukkan username">
+        <div class="card col-md-4 my-5 p-3">
+            <h1 class="text-center mt-3 p mb-3">Register</h1>
+            
+            <form action="" method="post" class="row px-2">
+                <div class="alert alert-danger">
+                    Hello
                 </div>
-                <div class="mb-3">
-                    <label for="exampleInputEmail1" class="form-label">Email</label>
-                    <input required name="" type="email" id="" cols="30" rows="10" class="form-control" placeholder="masukkan email">
-                </div>
-                <div class="mb-3">
-                    <label for="exampleInputEmail1" class="form-label">Password</label>
-                    <input required name="" id="" type="password" cols="30" rows="10" class="form-control" placeholder="masukkan password">
-                </div>
-                <div class="mb-3">
-                    <label for="exampleInputEmail1" class="form-label">Ketik Ulang Password</label>
-                    <input required name="" id="" type="password" cols="30" rows="10" class="form-control" placeholder="ketik ulang password">
-                </div>
-                
-                <input type="submit" value="Simpan" class="btn btn-primary">
+                <label for="username">username</label>
+                <input type="text" name="email" id="username" class="form-control mb-3" required placeholder="Masukkan Username...">
+                <label for="email">Email</label>
+                <input type="email" name="email" id="email" class="form-control mb-3" required placeholder="Masukkan Email...">
+                <label for="password">Password</label>
+                <input type="text" name="password" id="password" class="form-control mb-3" required placeholder="Masukkan Password...">
+                <label for="repassword">Ketik Ulang Password</label>
+                <input type="text" name="repassword" id="repassword" class="form-control mb-3" required placeholder="Masukkan Ulang Password...">
+                <input type="submit" value="Sign In" class="btn btn-primary mb-3">
             </form>
         </div>
         

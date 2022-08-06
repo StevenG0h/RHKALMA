@@ -4,6 +4,14 @@
         private int $maxVideoSize = 50000000; 
         private String $type = "";
         
+        function __construct()
+        {
+            parent::__construct();
+            if(!$this->User_model->LoginStatus){
+                redirect(base_url('/User/'));
+            }
+        }
+
         function index(){
             $showTestimoni = $this->db->get('Testimoni')->result();
             $data['testimoni'] = $showTestimoni;
@@ -12,11 +20,8 @@
         }
 
         function Update(){
-            
             if ($_POST['action'] == "Save") {
-                echo "<pre>";
-                    var_export($_POST);
-
+                if(!empty($_POST['komentar'])){
                 for ($i=0; $i < count($_POST['komentar']); $i++) {
                     $this->load->model('Testimoni_model');
                     $this->Testimoni_model->setTestimoniId($_POST['testimoniId'][$i]);
@@ -25,43 +30,88 @@
                         $file = $_FILES['Media'];
                         if($this->fileTypeValidator($file['name'][$i])){
                             if ($this->fileSizeValidator($file['size'][$i])) {
-                                $location = 'media/testimoni/'.$this->type.'/'.$file['name'].'';
+                                $location = 'media/testimoni/'.$this->type.'/'.$file['name'][$i].'';
                                 $this->db->select('Media');
-                                $data = $this->db->get_where('testimoni',array('Testimoni_id',$_POST['testimoniId'][$i]));
-                                var_dump($data);
-                                if (move_uploaded_file($file['tmp_name'],$location)) {
-                                    # code...
+                                $data = $this->db->get_where('testimoni',array('Media'=>$location));
+                                $data = $data->result();
+                                if (empty($data)) {
+                                    $data = $this->db->get_where('testimoni',array('Testimoni_id'=>$_POST['testimoniId'][$i]));
+                                    $data = $data->result();
+                                    // if ($data[0]->Media != $loc) {
+                                    //     $data = $this->db->get('testimoni',array('Testimoni_id',$_POST['testimoniId'][$i]));
+                                    //     $data = $data->result();
+                                        if (unlink($data[0]->Media)) {
+                                            if (move_uploaded_file($file['tmp_name'][$i],$location)) {
+                                                $this->Testimoni_model->setMedia($location);
+                                            }else{
+                                                $_SESSION['message'] = "gagal mengupload file";
+                                                $_SESSION['action_status'] = false;
+                                            }
+                                        }else{
+                                            $_SESSION['message'] = "gagal menghapus file lama";
+                                            $_SESSION['action_status'] = false;
+                                        }
+                                    // }else{
+                                    //     $_SESSION['message'] =  "duplikasi file";
+                                    //     $_SESSION['action_status'] = false;     
+                                    // }
+                                }else{
+                                    $_SESSION['message'] =  "Duplikasi File pada id testimoni = ".$_POST['testimoniId'][$i];
+                                    $_SESSION['action_status'] = false;
                                 }
-                                # code...
+                                
+                            }else{
+                                $_SESSION['message'] =  "file melebihi limit pada id testimoni = ".$_POST['testimoniId'][$i];
+                                $_SESSION['action_status'] = false;
+                                
                             }
                         }else{
-                            echo "hehe";
-                        }
-                        
+                            $_SESSION['message'] =  "file tidak valid pada id testimoni = ".$_POST['testimoniId'][$i];
+                            $_SESSION['action_status'] = false;
+                        }  
                     }
-                    if ($this->Testimoni_model->UpdateData()) {
-                        $_SESSION['message'] = "Update Berhasil";
-                        $_SESSION['action_status'] = true;
-                        //redirect(base_url('/testimoni/'));
+                    echo "hehe";
+                    if ($this->Testimoni_model->updateTestimoni()) {
+                        
                     }else{
-                        $_SESSION['message'] = "Update Gagal";
+                        $_SESSION['message'] = "Update testimoni gagal pada id testimoni = ".$_POST['testimoniId'][$i];
                         $_SESSION['action_status'] = false;
-                       // redirect(base_url('/testimoni/'));
                     }
                 }
-            }else if($_POST['action'] == "Delete"){
-                echo "delete";  
+            }else{
+                return redirect(base_url('/testimoni/'));
             }
-        }
-
-        //menampilkan halaman upload testimoni
-        function addTestimoni(){
-            $this->load->view("HeaderFooter/header.php");
-            $this->load->view("Admin/TambahTestimoni.php");
-        }
-
-        function EditTestimoni(){
-
+                if(empty($_SESSION['message'])){
+                    $_SESSION['message'] = "Berhasil Mengedit";
+                    $_SESSION['action_status'] = true;
+                }
+            }else if($_POST['action'] == "Delete"){
+                if (!empty($_POST['Deleteid'])) {
+                    $this->load->model('Testimoni_model');
+                    for ($i=0; $i < count($_POST['Deleteid']); $i++) { 
+                        $this->Testimoni_model->setTestimoniId($_POST['Deleteid'][$i]);
+                        $this->db->select('Media');
+                        $media = $this->db->get('testimoni',array('Testimoni_id',$_POST['testimoniId'][$i]));
+                        $media = $media->result();
+                        unlink($media[0]->Media);
+                        if ($this->Testimoni_model->deleteTestimoni()) {
+                            
+                        }else{
+                            $_SESSION['message'] = "Gagal Menghapus testimoni pada id testimoni  = ".$_POST['testimoniId'][$i];
+                            $_SESSION['action_status'] = false;
+                        }
+                    }
+                    if(empty($_SESSION['message'])){
+                        $_SESSION['message'] = "Berhasil Menghapus";
+                        $_SESSION['action_status'] = true;
+                    }
+                }else{
+                    return redirect(base_url('/testimoni/'));
+                }
+                
+            }
+            
+            return redirect(base_url('/testimoni/'));
         }
 
         //melakukan proses penerimaan data 
@@ -70,28 +120,46 @@
             //memanggil validator tipe file
             if($this->fileTypeValidator($file['name']) == true){
                 if ($this->fileSizeValidator($file['size']) == true) {
-                    $location = 'media/testimoni/'.$this->type.'/'.$file['name'].'';
-                    if(move_uploaded_file($file['tmp_name'],$location)){
-                        $_SESSION['message'] = "Upload Berhasil";
-                        $this->load->model('Testimoni_model');
-                        $this->Testimoni_model->setKomentar($_POST['komentar']);
-                        $this->Testimoni_model->setMedia($location);
-                        if($this->Testimoni_model->saveData()){
-                            redirect(base_url('/testimoni/'));
+                    $location = 'Media/testimoni/'.$this->type.'/'.$file['name'].'';
+                    $data = $this->db->get_where('testimoni',array('Media'=>$location));
+                    $data = $data->result();
+                    if (empty($data)) {
+                        if(move_uploaded_file($file['tmp_name'],$location)){
+                        
+                            $this->load->model('Testimoni_model');
+                            $this->Testimoni_model->setKomentar($_POST['komentar']);
+                            $this->Testimoni_model->setMedia($location);
+                            if($this->Testimoni_model->saveTestimoni()){
+                                $_SESSION['message'] = "Upload Berhasil";
+                                $_SESSION['action_status'] = true;
+                                redirect(base_url('/testimoni/'));
+                                
+                                
+                            }else{
+                                $_SESSION['message'] = "Upload Gagal Silahkan Coba lagi";
+                                $_SESSION['action_status'] = false;
+                                redirect(base_url('/testimoni/'));
+                                
+                            }
                         }else{
                             $_SESSION['message'] = "Upload Gagal Silahkan Coba lagi";
+                            $_SESSION['action_status'] = false;
                             redirect(base_url('/testimoni/'));
                         }
                     }else{
-                        $this->message = "upload filed";
-                        $_SESSION['message'] = "Upload Gagal Silahkan Coba lagi";
-                        redirect(base_url('/home/testimoni/'));
+                        $_SESSION['message'] = "Duplikasi File";
+                        $_SESSION['action_status'] = false;
+                        redirect(base_url('/testimoni/'));
                     }
                 }else{
                     $_SESSION['message'] = "Upload gagal : file anda tidak boleh melebihi 50MB untuk video dan 300KB untuk gambar";
+                    $_SESSION['action_status'] = false;
+                    redirect(base_url('/testimoni/'));
                 }
             }else{
                 $_SESSION['message'] = "Upload Gagal: file anda tidak valid";
+                $_SESSION['action_status'] = false;
+                redirect(base_url('/testimoni/'));
             }
         }
 
