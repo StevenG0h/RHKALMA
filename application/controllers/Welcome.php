@@ -20,6 +20,7 @@ class Welcome extends CI_Controller {
 	 */
 	public function index()
 	{
+		$testimoni$this->db-get('Testimoni');
 		$this->load->view('BizLand/index.php');
 	}
 }

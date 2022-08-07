@@ -7,15 +7,20 @@
         function __construct()
         {
             parent::__construct();
-            if(!$this->User_model->LoginStatus){
+            $this->load->model('User_model');
+            
+            if(!$this->User_model->LoginStatus()){
                 redirect(base_url('/User/'));
             }
         }
 
         function index(){
             $showTestimoni = $this->db->get('Testimoni')->result();
+            $header = array(
+                'title'=>"Testimoni"
+            );
             $data['testimoni'] = $showTestimoni;
-            $this->load->view('HeaderFooter/header');
+            $this->load->view('HeaderFooter/header',$header);
             $this->load->view('Admin/Testimoni',$data);
         }
 
@@ -132,35 +137,31 @@
                             if($this->Testimoni_model->saveTestimoni()){
                                 $_SESSION['message'] = "Upload Berhasil";
                                 $_SESSION['action_status'] = true;
-                                redirect(base_url('/testimoni/'));
                                 
                                 
                             }else{
                                 $_SESSION['message'] = "Upload Gagal Silahkan Coba lagi";
                                 $_SESSION['action_status'] = false;
-                                redirect(base_url('/testimoni/'));
                                 
                             }
                         }else{
                             $_SESSION['message'] = "Upload Gagal Silahkan Coba lagi";
                             $_SESSION['action_status'] = false;
-                            redirect(base_url('/testimoni/'));
                         }
                     }else{
                         $_SESSION['message'] = "Duplikasi File";
                         $_SESSION['action_status'] = false;
-                        redirect(base_url('/testimoni/'));
                     }
                 }else{
                     $_SESSION['message'] = "Upload gagal : file anda tidak boleh melebihi 50MB untuk video dan 300KB untuk gambar";
                     $_SESSION['action_status'] = false;
-                    redirect(base_url('/testimoni/'));
                 }
             }else{
                 $_SESSION['message'] = "Upload Gagal: file anda tidak valid";
                 $_SESSION['action_status'] = false;
-                redirect(base_url('/testimoni/'));
+                
             }
+            redirect(base_url('/testimoni/'));
         }
 
         //validasi tipe file video atau foto
