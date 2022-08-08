@@ -20,7 +20,9 @@ class Welcome extends CI_Controller {
 	 */
 	public function index()
 	{
-		$testimoni$this->db-get('Testimoni');
-		$this->load->view('BizLand/index.php');
+		$testimoni = $this->db->get('Testimoni')->result();
+		$katalog = $this->db->get('Katalog')->result();
+		$data = array('testimoni'=>$testimoni,'katalog'=>$katalog);
+		$this->load->view('BizLand/index.php',$data);
 	}
 }
